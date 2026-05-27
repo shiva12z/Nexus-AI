@@ -25,7 +25,12 @@ initSockets(io);
 
 // Security & parsing
 app.use(helmet());
-app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(cors({
+  origin: function (origin, callback) {
+    callback(null, true); // Allow all origins for MVP testing
+  },
+  credentials: true
+}));
 app.use(express.json({ limit: "2mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(httpLogger);

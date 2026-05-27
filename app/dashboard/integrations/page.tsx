@@ -31,7 +31,7 @@ export default function IntegrationsPage() {
       const channel = channelName === "Instagram" ? "instagram" : "facebook";
       const sender = "sim_user_" + Math.floor(Math.random() * 1000);
       
-      const res = await fetch("http://localhost:4000/api/integrations/simulate", {
+      const res = await fetch("http://127.0.0.1:4000/api/integrations/simulate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

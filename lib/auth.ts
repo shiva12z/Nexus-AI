@@ -19,7 +19,7 @@ const USER_KEY = "nexusai_user";
 const TEAM_KEY = "nexusai_team";
 
 export const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+  process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000/api";
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;
