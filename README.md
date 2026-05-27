@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Multi Channel Auto Reply, Calls & Business Automation Platform
 
-## Getting Started
+## Problem Statement
+Businesses receive customer enquiries across WhatsApp, Instagram, Facebook, LinkedIn, phone calls, websites, and other platforms. Managing conversations manually causes delayed responses, missed leads, inconsistent communication, and poor customer experience. Companies need a unified conversational AI system capable of handling messages, voice calls, collecting data, booking appointments, and answering queries automatically.
 
-First, run the development server:
+## Solution
+Build a unified conversational AI platform with: 
+- WhatsApp Automation
+- Instagram Auto Reply
+- Facebook Inbox Automation
+- LinkedIn Messaging Automation
+- AI Voice Call Automation
+- Unified Inbox
+- AI Response Engine
+- Knowledge Base Training
+- Lead Capture
+- Booking Management
+- Customer Data Collection
+- Sheet Export
+- CRM Integration
+- Analytics Dashboard
+- Notifications
+- Team Assignment
+- Workflow Automation
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Approach Integrated
+This platform utilizes a robust tech stack, featuring Next.js (React) for the frontend to provide a highly interactive unified inbox and analytics dashboard. The backend is built with Express.js (Node.js) to handle complex integrations with WhatsApp, Meta, Twilio, and OpenAI for the conversational AI engine. We use Supabase (PostgreSQL) for secure, scalable data storage and real-time synchronization, allowing team members to view and assign conversations instantly. RAG (Retrieval-Augmented Generation) is integrated for the AI Knowledge Base to answer customer queries based on uploaded business data.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Frontend Setup Instructions
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This is a Next.js project bootstrapped with `create-next-app`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-## Learn More
+2. **Configure Environment Variables:**
+   Copy the example environment file and fill in your details (e.g., Supabase URLs and Anon Keys).
+   ```bash
+   cp .env.local.example .env.local
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+3. **Run the development server:**
+   ```bash
+   npm run dev
+   # or yarn dev / pnpm dev
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+4. **Access the application:**
+   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For backend setup, please refer to `backend/README.md`.

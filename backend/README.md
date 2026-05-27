@@ -1,22 +1,9 @@
-# NexusAI Backend API
+# Backend - AI Multi Channel Auto Reply, Calls & Business Automation Platform
 
-AI-powered omnichannel conversational automation platform for SMBs.
-
-## Quick Start
-
-```bash
-cd backend
-cp .env.example .env
-# Fill in Supabase, OpenAI, Twilio credentials
-
-npm install
-npm run dev
-```
-
-API: `http://localhost:4000/api`  
-WebSocket: `http://localhost:4000`
+This directory contains the backend for the AI-powered omnichannel conversational automation platform.
 
 ## Architecture
+The backend is built using Express (Node.js) and interfaces with Supabase (PostgreSQL), OpenAI (for AI processing and RAG), Twilio (for calls and WhatsApp), and Meta Webhooks (Instagram/Facebook). 
 
 ```
 backend/src/
@@ -37,51 +24,84 @@ backend/src/
 
 ## Database Setup
 
-1. Create a Supabase project
-2. Run `src/database/schema.sql` in SQL Editor
-3. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in `.env`
+1. Create a Supabase project.
+2. Run `src/database/schema.sql` in the SQL Editor.
+3. Set `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in `.env`.
 
-## API Endpoints
+## Backend Setup Instructions
 
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/auth/signup` | Register team + admin |
-| POST | `/api/auth/login` | JWT login |
-| GET | `/api/conversations` | Unified inbox |
-| POST | `/api/conversations/:id/messages` | Agent reply |
-| GET | `/api/leads` | Lead list |
-| GET | `/api/bookings` | Bookings |
-| GET | `/api/analytics/dashboard` | KPI stats |
-| GET | `/api/knowledge-base` | RAG sources |
-| POST | `/api/workflows` | Create automation |
-| GET | `/api/notifications` | In-app notifications |
+1. **Navigate to the backend directory:**
+   ```bash
+   cd backend
+   ```
+
+2. **Configure Environment Variables:**
+   ```bash
+   cp .env.example .env
+   # Fill in Supabase, OpenAI, and Twilio credentials
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+4. **Run the backend development server:**
+   ```bash
+   npm run dev
+   ```
+
+   The API will run at `http://localhost:4000/api`  
+   WebSocket server will run at `http://localhost:4000`
+
+## API Usage Information
+
+The REST API provides comprehensive endpoints for managing the platform. All protected endpoints require a JWT Bearer token obtained from login.
+
+### Authentication
+- `POST /api/auth/signup`: Register a new team and admin user. Returns JWT and user info.
+- `POST /api/auth/login`: Authenticate with email/password. Returns JWT for subsequent requests.
+
+### Unified Inbox & Conversations
+- `GET /api/conversations`: Fetch all active conversations across channels. Supports query parameters for filtering by channel, status, or assignee.
+- `GET /api/conversations/:id/messages`: Retrieve message history for a specific conversation.
+- `POST /api/conversations/:id/messages`: Send a manual reply as an agent. The payload should include the message content and type.
+- `PATCH /api/conversations/:id/assign`: Assign a conversation to a specific team member.
+- `PATCH /api/conversations/:id/status`: Update conversation status (e.g., open, closed, snoozed).
+
+### CRM & Data Collection
+- `GET /api/leads`: Fetch the list of leads captured from conversations.
+- `POST /api/leads`: Manually add or update a lead profile.
+- `GET /api/bookings`: Retrieve calendar bookings and scheduled appointments.
+- `POST /api/bookings`: Create a new manual booking.
+
+### Knowledge Base & AI
+- `GET /api/knowledge-base`: List all documents and sources used for RAG training.
+- `POST /api/knowledge-base/upload`: Upload a new document or text snippet to train the AI Response Engine.
+
+### Workflows & Automation
+- `GET /api/workflows`: List automated workflows (e.g., out-of-office replies, auto-assign rules).
+- `POST /api/workflows`: Create a new automation JSON workflow.
+
+### Analytics & Notifications
+- `GET /api/analytics/dashboard`: Retrieve KPI statistics, message volume, and AI resolution rates.
+- `GET /api/notifications`: Get in-app notifications (e.g., new unassigned conversations, system alerts).
+- `PATCH /api/notifications/:id/read`: Mark a notification as read.
 
 ## Webhooks
 
-| Channel | URL |
-|---------|-----|
-| WhatsApp (Twilio) | `POST /api/webhooks/whatsapp` |
-| Instagram/Facebook | `GET/POST /api/webhooks/meta` |
-| Website Chat | `POST /api/webhooks/webchat/message` |
+Ensure `DEFAULT_TEAM_ID` is set to your team's UUID in the `.env` to route webhooks correctly during local testing.
 
-Set `DEFAULT_TEAM_ID` to your team's UUID for webhook routing.
+| Channel | Webhook URL Endpoint | Description |
+|---------|----------------------|-------------|
+| WhatsApp (Twilio) | `POST /api/webhooks/whatsapp` | Receives incoming messages & status updates |
+| Instagram/Facebook | `GET/POST /api/webhooks/meta` | Handles Meta verify tokens and incoming DMs/comments |
+| Website Chat | `POST /api/webhooks/webchat/message` | Custom integration for the React web widget |
 
-## MVP Priority
+## Deployment
 
-1. WhatsApp webhook + AI auto-reply
-2. Unified inbox APIs
-3. Lead capture
-4. Notifications
-5. Dashboard analytics
-
-Instagram/Facebook use Meta webhooks (mock-friendly without tokens).
-
-## Deploy
-
-Railway / Render:
-
+For production deployments (e.g., Railway, Render):
 ```bash
 npm start
 ```
-
-Set all env vars from `.env.example`.
+Make sure all required environment variables are set in your provider's dashboard.
