@@ -1,6 +1,7 @@
 "use client";
-import { mockBookings } from "@/lib/mock-data";
-import { Calendar, Clock, Video, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Calendar, Clock, Video, Plus, ChevronLeft, ChevronRight, Loader2, Bot } from "lucide-react";
+import { API_BASE, getToken } from "@/lib/auth";
 
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const today = new Date();
@@ -16,12 +17,38 @@ function buildCalendar() {
   return cells;
 }
 
-const statusColors: Record<string, string> = { confirmed: "#10b981", pending: "#f59e0b" };
-const channelColors: Record<string, string> = { WhatsApp: "#25D366", Instagram: "#E1306C", Facebook: "#1877F2", "Web Chat": "#8b5cf6" };
+const statusColors: Record<string, string> = { confirmed: "#10b981", pending: "#f59e0b", scheduled: "#3b82f6" };
 
 export default function BookingsPage() {
   const calCells = buildCalendar();
-  const bookingDays = mockBookings.map(b => parseInt(b.date.split("-")[2]));
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
+  const fetchAppointments = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/bookings`, {
+        headers: { "Authorization": `Bearer ${getToken()}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAppointments(data.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Assuming dates come in ISO format or similar, we extract the day for the calendar
+  const bookingDays = appointments.map(b => {
+    const d = new Date(b.scheduled_at || b.created_at);
+    return d.getDate();
+  });
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
@@ -31,7 +58,7 @@ export default function BookingsPage() {
             Booking Management
           </h1>
           <p style={{ fontSize: 13.5, color: "rgba(240,240,255,0.45)" }}>
-            {mockBookings.filter(b => b.status === "confirmed").length} confirmed · {mockBookings.filter(b => b.status === "pending").length} pending
+            {appointments.length} appointments extracted by AI
           </p>
         </div>
         <button className="btn-primary" style={{ fontSize: 13, padding: "9px 18px" }}>
@@ -81,42 +108,51 @@ export default function BookingsPage() {
 
         {/* Bookings List */}
         <div className="glass-card-elevated" style={{ padding: 24 }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#f0f0ff", marginBottom: 18 }}>Upcoming Meetings</h3>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: "#f0f0ff", marginBottom: 18, display: "flex", alignItems: "center", gap: 8 }}>
+            <Bot size={16} color="#8b5cf6" /> Upcoming AI Appointments
+          </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {mockBookings.map(booking => (
-              <div key={booking.id} style={{
-                display: "flex", alignItems: "center", gap: 16, padding: "14px 18px",
-                background: "rgba(255,255,255,0.03)", borderRadius: 12,
-                border: "1px solid rgba(255,255,255,0.06)",
-              }}>
-                <div style={{ width: 42, height: 42, borderRadius: 10, background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                  <span style={{ fontSize: 9, fontWeight: 700, color: "#a78bfa", letterSpacing: "0.05em" }}>
-                    {new Date(booking.date).toLocaleString("default", { month: "short" }).toUpperCase()}
-                  </span>
-                  <span style={{ fontSize: 16, fontWeight: 800, color: "#f0f0ff", lineHeight: 1 }}>
-                    {booking.date.split("-")[2]}
-                  </span>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: "#f0f0ff", marginBottom: 3 }}>{booking.name}</div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 12, color: "rgba(240,240,255,0.5)", display: "flex", alignItems: "center", gap: 4 }}>
-                      <Clock size={11} /> {booking.time}
+            {isLoading ? (
+              <div style={{ padding: 40, textAlign: "center", color: "rgba(240,240,255,0.4)" }}>
+                <Loader2 size={24} className="animate-spin" style={{ margin: "0 auto", marginBottom: 10 }} />
+                Loading appointments...
+              </div>
+            ) : appointments.length === 0 ? (
+              <div style={{ padding: 40, textAlign: "center", color: "rgba(240,240,255,0.4)" }}>
+                No appointments found.
+              </div>
+            ) : appointments.map(booking => {
+              const bDate = new Date(booking.scheduled_at || booking.created_at);
+              return (
+                <div key={booking.id} style={{
+                  display: "flex", alignItems: "center", gap: 16, padding: "14px 18px",
+                  background: "rgba(255,255,255,0.03)", borderRadius: 12,
+                  border: "1px solid rgba(255,255,255,0.06)",
+                }}>
+                  <div style={{ width: 42, height: 42, borderRadius: 10, background: "rgba(139,92,246,0.12)", border: "1px solid rgba(139,92,246,0.2)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontSize: 9, fontWeight: 700, color: "#a78bfa", letterSpacing: "0.05em" }}>
+                      {bDate.toLocaleString("default", { month: "short" }).toUpperCase()}
                     </span>
-                    <span style={{ fontSize: 12, color: "rgba(240,240,255,0.5)", display: "flex", alignItems: "center", gap: 4 }}>
-                      <Video size={11} /> {booking.type}
+                    <span style={{ fontSize: 16, fontWeight: 800, color: "#f0f0ff", lineHeight: 1 }}>
+                      {bDate.getDate()}
                     </span>
                   </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: "#f0f0ff", marginBottom: 3 }}>
+                      {booking.conversation?.contact_name || booking.conversation?.external_id || "Unknown"}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontSize: 12, color: "rgba(240,240,255,0.5)", display: "flex", alignItems: "center", gap: 4 }}>
+                        <Clock size={11} /> {bDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                      </span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 99, background: (statusColors[booking.status] || statusColors.scheduled) + "18", color: statusColors[booking.status] || statusColors.scheduled, textTransform: "capitalize" }}>
+                    {booking.status}
+                  </span>
                 </div>
-                <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 99, background: statusColors[booking.status] + "18", color: statusColors[booking.status] }}>
-                  {booking.status}
-                </span>
-                <span style={{ fontSize: 11.5, fontWeight: 700, padding: "3px 10px", borderRadius: 99, background: channelColors[booking.channel] + "18", color: channelColors[booking.channel] }}>
-                  {booking.channel}
-                </span>
-                <span style={{ fontSize: 12, color: "rgba(240,240,255,0.4)" }}>{booking.agent}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

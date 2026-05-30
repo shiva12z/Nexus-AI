@@ -109,9 +109,9 @@ export default function InboxPage() {
       });
 
   return (
-    <div style={{ display: "flex", height: "calc(100vh - 120px)", gap: 0, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
+    <div style={{ display: "flex", width: "100%", maxWidth: "100%", height: "calc(100vh - 120px)", gap: 0, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
       {/* Conversation List */}
-      <div style={{ width: 320, background: "rgba(10,10,20,0.9)", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column" }}>
+      <div style={{ width: 320, minWidth: 320, flexShrink: 0, background: "rgba(10,10,20,0.9)", borderRight: "1px solid rgba(255,255,255,0.06)", display: "flex", flexDirection: "column" }}>
         {/* Search */}
         <div style={{ padding: "14px 14px 10px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 9, padding: "8px 12px" }}>
@@ -193,149 +193,197 @@ export default function InboxPage() {
         </div>
       </div>
 
-      {/* Chat Window */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "rgba(8,8,16,0.95)" }}>
-        {selectedConv ? (
-          <>
-            {/* Chat Header */}
-            <div style={{
-              padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
-              display: "flex", alignItems: "center", gap: 12,
-            }}>
+      {/* Chat Area & AI Insights */}
+      <div style={{ flex: 1, minWidth: 0, display: "flex" }}>
+        {/* Chat Window */}
+        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", background: "rgba(8,8,16,0.95)", borderRight: "1px solid rgba(255,255,255,0.06)" }}>
+          {selectedConv ? (
+            <>
+              {/* Chat Header */}
               <div style={{
-                width: 38, height: 38, borderRadius: "50%",
-                background: "#8b5cf625", border: `1.5px solid #8b5cf650`,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 13, fontWeight: 700, color: "#8b5cf6",
+                padding: "14px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)",
+                display: "flex", alignItems: "center", gap: 12, flexShrink: 0
               }}>
-                {(selectedConv.contact_name || selectedConv.external_id || "?").substring(0, 1).toUpperCase()}
-              </div>
-              <div>
-                <div style={{ fontSize: 14, fontWeight: 700, color: "#f0f0ff" }}>{selectedConv.contact_name || selectedConv.external_id}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(240,240,255,0.4)" }}>
-                  {channelIcons[selectedConv.channel]}
-                  <span style={{ textTransform: "capitalize" }}>{selectedConv.channel}</span>
-                  <span>·</span>
-                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: statusColors[selectedConv.status] || statusColors.active }} />
-                  <span style={{ textTransform: "capitalize" }}>{selectedConv.status}</span>
+                <div style={{
+                  width: 38, height: 38, borderRadius: "50%",
+                  background: "#8b5cf625", border: `1.5px solid #8b5cf650`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 13, fontWeight: 700, color: "#8b5cf6",
+                }}>
+                  {(selectedConv.contact_name || selectedConv.external_id || "?").substring(0, 1).toUpperCase()}
+                </div>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: "#f0f0ff" }}>{selectedConv.contact_name || selectedConv.external_id}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "rgba(240,240,255,0.4)" }}>
+                    {channelIcons[selectedConv.channel]}
+                    <span style={{ textTransform: "capitalize" }}>{selectedConv.channel}</span>
+                    <span>·</span>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: statusColors[selectedConv.status] || statusColors.active }} />
+                    <span style={{ textTransform: "capitalize" }}>{selectedConv.status}</span>
+                  </div>
+                </div>
+                <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
+                  {/* AI mode toggle */}
+                  <button onClick={() => setAiMode(!aiMode)} style={{
+                    display: "flex", alignItems: "center", gap: 7, padding: "6px 12px", borderRadius: 8, cursor: "pointer",
+                    background: aiMode ? "rgba(139,92,246,0.15)" : "rgba(255,255,255,0.05)",
+                    border: aiMode ? "1px solid rgba(139,92,246,0.3)" : "1px solid rgba(255,255,255,0.08)",
+                    color: aiMode ? "#a78bfa" : "rgba(240,240,255,0.45)", fontSize: 12, fontWeight: 600,
+                  }}>
+                    <Bot size={13} /> {aiMode ? "AI Active" : "Human Mode"}
+                  </button>
+                  <button style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "rgba(240,240,255,0.5)" }}>
+                    <UserPlus size={14} />
+                  </button>
+                  <button style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "rgba(240,240,255,0.5)" }}>
+                    <MoreHorizontal size={14} />
+                  </button>
                 </div>
               </div>
-              <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignItems: "center" }}>
-                {/* AI mode toggle */}
-                <button onClick={() => setAiMode(!aiMode)} style={{
-                  display: "flex", alignItems: "center", gap: 7, padding: "6px 12px", borderRadius: 8, cursor: "pointer",
-                  background: aiMode ? "rgba(139,92,246,0.15)" : "rgba(255,255,255,0.05)",
-                  border: aiMode ? "1px solid rgba(139,92,246,0.3)" : "1px solid rgba(255,255,255,0.08)",
-                  color: aiMode ? "#a78bfa" : "rgba(240,240,255,0.45)", fontSize: 12, fontWeight: 600,
+
+              {/* Messages */}
+              <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
+                {messages.map((msg) => {
+                  if (msg.sender === "system") {
+                    return (
+                      <div key={msg.id} style={{ textAlign: "center" }}>
+                        <span style={{ fontSize: 11.5, padding: "5px 14px", borderRadius: 99, background: "rgba(245,158,11,0.12)", color: "#fbbf24", border: "1px solid rgba(245,158,11,0.2)" }}>
+                          ⚠️ {msg.body}
+                        </span>
+                      </div>
+                    );
+                  }
+                  if (msg.sender === "user") {
+                    return (
+                      <div key={msg.id} style={{ display: "flex", justifyContent: "flex-start", gap: 8, alignItems: "flex-end" }}>
+                        <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#3b82f625", border: `1px solid #3b82f640`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#3b82f6", flexShrink: 0 }}>
+                          U
+                        </div>
+                        <div>
+                          <div className="chat-bubble-ai">{msg.body}</div>
+                          <div style={{ fontSize: 10.5, color: "rgba(240,240,255,0.25)", marginTop: 4 }}>
+                            {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={msg.id} style={{ display: "flex", justifyContent: "flex-end", gap: 8, alignItems: "flex-end" }}>
+                      <div>
+                        <div className="chat-bubble-user" style={{ background: msg.sender === "ai" ? "rgba(139,92,246,0.15)" : "#8b5cf6" }}>
+                          {msg.body}
+                        </div>
+                        <div style={{ fontSize: 10.5, color: "rgba(240,240,255,0.25)", textAlign: "right", marginTop: 4 }}>
+                          {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} · {msg.sender === "ai" ? "AI" : "You"}
+                        </div>
+                      </div>
+                      {msg.sender === "ai" && (
+                        <div style={{ width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg, #8b5cf6, #3b82f6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                          <Bot size={12} color="white" />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* AI Suggested Replies */}
+              {aiMode && (
+                <div style={{ padding: "10px 20px", borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 8, overflowX: "auto", flexShrink: 0, maxWidth: "100%" }}>
+                  <span style={{ fontSize: 11, color: "rgba(240,240,255,0.3)", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 4 }}>
+                    <Bot size={11} color="#a78bfa" /> Suggested:
+                  </span>
+                  {suggestedReplies.map((reply, i) => (
+                    <button key={i} onClick={() => setInputText(reply)} style={{
+                      padding: "5px 12px", borderRadius: 99, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap",
+                      background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#a78bfa",
+                    }}>
+                      {reply}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Input */}
+              <div style={{ padding: "14px 20px", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 10, alignItems: "flex-end", flexShrink: 0, maxWidth: "100%" }}>
+                <textarea
+                  value={inputText}
+                  onChange={e => setInputText(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                  placeholder="Type a message..."
+                  rows={1}
+                  style={{
+                    flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+                    borderRadius: 10, padding: "10px 14px", fontSize: 13.5, color: "#f0f0ff", resize: "none", outline: "none",
+                  }}
+                />
+                <button onClick={sendMessage} style={{
+                  width: 38, height: 38, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "linear-gradient(135deg, #8b5cf6, #3b82f6)", border: "none", cursor: "pointer",
+                  boxShadow: "0 4px 16px rgba(139,92,246,0.3)",
                 }}>
-                  <Bot size={13} /> {aiMode ? "AI Active" : "Human Mode"}
+                  <Send size={16} color="white" />
                 </button>
-                <button style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "rgba(240,240,255,0.5)" }}>
-                  <UserPlus size={14} />
-                </button>
-                <button style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "rgba(240,240,255,0.5)" }}>
-                  <MoreHorizontal size={14} />
-                </button>
+              </div>
+            </>
+          ) : (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(240,240,255,0.4)" }}>
+              Select a conversation to view messages
+            </div>
+          )}
+        </div>
+
+        {/* AI Intelligence Sidebar */}
+        <div style={{ width: 280, minWidth: 280, flexShrink: 0, background: "rgba(10,10,20,0.95)", display: "flex", flexDirection: "column", overflowY: "auto", padding: 20 }}>
+          <h3 style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#f0f0ff", margin: "0 0 20px 0" }}>
+            <Bot size={16} color="#a78bfa" /> AI Intelligence
+          </h3>
+          
+          {selectedConv ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {/* Lead Score */}
+              <div style={{ background: "rgba(255,255,255,0.03)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Lead Score</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: selectedConv.metadata?.ai_score > 80 ? "#10b981" : "#f59e0b" }}>
+                  {selectedConv.metadata?.ai_score || "--"}
+                </div>
+                <div style={{ fontSize: 12, marginTop: 4, color: "rgba(255,255,255,0.6)", textTransform: "capitalize" }}>
+                  Intent: <strong style={{ color: "white" }}>{selectedConv.metadata?.ai_intent || "Unknown"}</strong>
+                </div>
+              </div>
+
+              {/* Sentiment */}
+              <div style={{ background: "rgba(255,255,255,0.03)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Sentiment</div>
+                <div style={{ fontSize: 16, fontWeight: 700, textTransform: "capitalize", color: "#f0f0ff" }}>
+                  {selectedConv.metadata?.ai_sentiment || "Analyzing..."}
+                </div>
+              </div>
+
+              {/* CRM Recommendation */}
+              <div style={{ background: "rgba(255,255,255,0.03)", padding: 16, borderRadius: 12, border: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Next Action</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#8b5cf6", marginBottom: 6 }}>
+                  {selectedConv.metadata?.ai_next_action || "Wait"}
+                </div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: 1.4 }}>
+                  {selectedConv.metadata?.ai_reason || "No immediate action required."}
+                </div>
               </div>
             </div>
-
-        {/* Messages */}
-        <div style={{ flex: 1, overflowY: "auto", padding: 20, display: "flex", flexDirection: "column", gap: 14 }}>
-          {messages.map((msg) => {
-            if (msg.sender === "system") {
-              return (
-                <div key={msg.id} style={{ textAlign: "center" }}>
-                  <span style={{ fontSize: 11.5, padding: "5px 14px", borderRadius: 99, background: "rgba(245,158,11,0.12)", color: "#fbbf24", border: "1px solid rgba(245,158,11,0.2)" }}>
-                    ⚠️ {msg.body}
-                  </span>
-                </div>
-              );
-            }
-            if (msg.sender === "user") {
-              return (
-                <div key={msg.id} style={{ display: "flex", justifyContent: "flex-start", gap: 8, alignItems: "flex-end" }}>
-                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: "#3b82f625", border: `1px solid #3b82f640`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 700, color: "#3b82f6", flexShrink: 0 }}>
-                    U
-                  </div>
-                  <div>
-                    <div className="chat-bubble-ai">{msg.body}</div>
-                    <div style={{ fontSize: 10.5, color: "rgba(240,240,255,0.25)", marginTop: 4 }}>
-                      {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </div>
-                  </div>
-                </div>
-              );
-            }
-            return (
-              <div key={msg.id} style={{ display: "flex", justifyContent: "flex-end", gap: 8, alignItems: "flex-end" }}>
-                <div>
-                  <div className="chat-bubble-user" style={{ background: msg.sender === "ai" ? "rgba(139,92,246,0.15)" : "#8b5cf6" }}>
-                    {msg.body}
-                  </div>
-                  <div style={{ fontSize: 10.5, color: "rgba(240,240,255,0.25)", textAlign: "right", marginTop: 4 }}>
-                    {new Date(msg.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} · {msg.sender === "ai" ? "AI" : "You"}
-                  </div>
-                </div>
-                {msg.sender === "ai" && (
-                  <div style={{ width: 26, height: 26, borderRadius: "50%", background: "linear-gradient(135deg, #8b5cf6, #3b82f6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                    <Bot size={12} color="white" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+          ) : (
+            <div style={{ fontSize: 13, color: "rgba(255,255,255,0.3)", textAlign: "center", marginTop: 40 }}>
+              Select a conversation to see AI insights.
+            </div>
+          )}
         </div>
-
-        {/* AI Suggested Replies */}
-        {aiMode && (
-          <div style={{ padding: "10px 20px", borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", gap: 8, overflowX: "auto" }}>
-            <span style={{ fontSize: 11, color: "rgba(240,240,255,0.3)", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 4 }}>
-              <Bot size={11} color="#a78bfa" /> Suggested:
-            </span>
-            {suggestedReplies.map((reply, i) => (
-              <button key={i} onClick={() => setInputText(reply)} style={{
-                padding: "5px 12px", borderRadius: 99, fontSize: 12, cursor: "pointer", whiteSpace: "nowrap",
-                background: "rgba(139,92,246,0.1)", border: "1px solid rgba(139,92,246,0.2)", color: "#a78bfa",
-              }}>
-                {reply}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Input */}
-        <div style={{ padding: "14px 20px", borderTop: "1px solid rgba(255,255,255,0.06)", display: "flex", gap: 10, alignItems: "flex-end" }}>
-          <textarea
-            value={inputText}
-            onChange={e => setInputText(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-            placeholder="Type a message..."
-            rows={1}
-            style={{
-              flex: 1, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 10, padding: "10px 14px", fontSize: 13.5, color: "#f0f0ff", resize: "none", outline: "none",
-            }}
-          />
-          <button onClick={sendMessage} style={{
-            width: 38, height: 38, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "linear-gradient(135deg, #8b5cf6, #3b82f6)", border: "none", cursor: "pointer",
-            boxShadow: "0 4px 16px rgba(139,92,246,0.3)",
-          }}>
-            <Send size={16} color="white" />
-          </button>
-        </div>
-          </>
-        ) : (
-          <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", color: "rgba(240,240,255,0.4)" }}>
-            Select a conversation to view messages
-          </div>
-        )}
       </div>
     </div>
   );

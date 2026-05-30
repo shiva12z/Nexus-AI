@@ -1,4 +1,4 @@
-import { getOpenAI } from "../ai/openaiClient.js";
+import { callGroq } from "../ai/groqClient.js";
 import { config } from "../config/index.js";
 
 function cleanMarkdown(text) {
@@ -15,9 +15,7 @@ export async function handleAssistantChat(req, res, next) {
       return res.status(400).json({ error: { message: "Message is required" } });
     }
 
-    const openai = getOpenAI();
-
-    // Optionally format history from the client to match OpenAI's message format
+    // Optionally format history from the client to match Groq's message format
     const messages = [
       {
         role: "system",
@@ -33,14 +31,8 @@ Be concise, friendly, and helpful.`,
     ];
 
     try {
-      const completion = await openai.chat.completions.create({
-        model: config.openai.chatModel || "gpt-4o-mini",
-        messages,
-        temperature: 0.7,
-        max_tokens: 500,
-      });
-
-      const reply = completion.choices[0]?.message?.content || "I'm sorry, I couldn't process that.";
+      const responseText = await callGroq(messages, false);
+      const reply = responseText || "I'm sorry, I couldn't process that.";
       res.json({ data: { text: cleanMarkdown(reply) } });
     } catch (err) {
       console.warn("[assistantController] OpenAI chat completion failed, using intelligent rule-based fallback:", err.message);
