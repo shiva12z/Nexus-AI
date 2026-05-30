@@ -3,17 +3,19 @@
 This directory contains the backend for the AI-powered omnichannel conversational automation platform.
 
 ## Architecture
-The backend is built using Express (Node.js) and interfaces with Supabase (PostgreSQL), OpenAI (for AI processing and RAG), Twilio (for calls and WhatsApp), and Meta Webhooks (Instagram/Facebook). 
+The backend is built using Express (Node.js) and interfaces with Supabase (PostgreSQL), Groq (for ultra-fast AI inference), OpenAI (for RAG), Twilio (for calls and WhatsApp), and Meta Webhooks (Instagram/Facebook). 
 
 ```
 backend/src/
 ├── config/          # Env + Supabase clients
-├── database/        # PostgreSQL schema (Supabase)
+├── database/        # PostgreSQL schema (Supabase) + ai_schema.sql
 ├── middleware/      # Auth, rate limit, webhooks, errors
 ├── routes/          # REST API routers
 ├── controllers/     # Request handlers
 ├── services/        # Business logic
-├── ai/              # OpenAI, RAG, embeddings
+├── ai/              # GroqClient, OpenAI, RAG, embeddings
+│   └── features/    # AI Features: Lead Scoring, Sentiment, CRM, Auto-Responder, Appointments
+
 ├── workflows/       # JSON workflow engine
 ├── webhooks/        # WhatsApp, Meta, Web Chat
 ├── sockets/         # Realtime (Socket.io)

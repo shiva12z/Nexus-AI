@@ -23,6 +23,17 @@ Build a unified conversational AI platform with:
 - Team Assignment
 - Workflow Automation
 
+## 🚀 Latest Features (v2)
+- **Ultra-Fast Groq API Integration**: Powered by Llama-3-8b-8192 on LPUs for instant AI inference.
+- **Unified AI Intelligence Sidebar**: Seamless, responsive UI with nested flexbox fixes for perfect layout rendering.
+- **Real-Time AI Lead Scoring**: Automatically extracts customer purchase intent and assigns scores (0-100).
+- **Sentiment Analysis Engine**: Categorizes customer mood (positive, urgent, frustrated) to prioritize responses.
+- **Next Action CRM Recommendations**: Tells human agents exactly what to do next based on conversation context.
+- **Automated AI Sales Agent**: Drafts and sends sales-optimized replies autonomously via webhooks.
+- **Smart Appointment Setter**: Extracts dates/times from chat and automatically books calendar appointments.
+- **Follow-Up Automation**: Automatically revives stale, high-intent leads.
+- **Custom AI Database Schema**: Dedicated PostgreSQL tables (`lead_scores`, `sentiments`, `crm_recommendations`) for persistent intelligence.
+
 ## Approach Integrated
 This platform utilizes a robust tech stack, featuring Next.js (React) for the frontend to provide a highly interactive unified inbox and analytics dashboard. The backend is built with Express.js (Node.js) to handle complex integrations with WhatsApp, Meta, Twilio, and OpenAI for the conversational AI engine. We use Supabase (PostgreSQL) for secure, scalable data storage and real-time synchronization, allowing team members to view and assign conversations instantly. RAG (Retrieval-Augmented Generation) is integrated for the AI Knowledge Base to answer customer queries based on uploaded business data.
 
