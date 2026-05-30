@@ -48,6 +48,6 @@ This is a Next.js project bootstrapped with `create-next-app`.
    ```
 
 4. **Access the application:**
-   Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   Open [https://nexus-ai-gilt-two.vercel.app/](https://nexus-ai-gilt-two.vercel.app/) with your browser to see the result.
 
 For backend setup, please refer to `backend/README.md`.
