@@ -1,4 +1,5 @@
 import { getOpenAI } from "./openaiClient.js";
+import { callGroq } from "./groqClient.js";
 import { config } from "../config/index.js";
 import { buildSystemPrompt, LEAD_EXTRACTION_PROMPT } from "./promptManager.js";
 import { searchKnowledge, formatRagContext } from "./vectorSearch.js";
@@ -37,14 +38,8 @@ export async function generateAIReply({
       })),
     ];
 
-    const completion = await openai.chat.completions.create({
-      model: aiSettings.model || config.openai.chatModel,
-      messages: chatMessages,
-      temperature: parseFloat(aiSettings.temperature ?? 0.7),
-      max_tokens: 500,
-    });
-
-    const reply = completion.choices[0]?.message?.content?.trim() || "I'm here to help! Could you tell me more?";
+    const replyContent = await callGroq(chatMessages, false);
+    const reply = replyContent.trim() || "I'm here to help! Could you tell me more?";
     const confidence = chunks.length > 0 ? 0.85 : 0.6;
 
     return {

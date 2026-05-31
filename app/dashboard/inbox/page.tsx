@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import type { ReactElement } from "react";
 import { Bot, User, Send, Phone, MoreHorizontal, Tag, UserPlus, StickyNote, Search, Filter, MessageCircle, Camera, Share2, Globe, CheckCheck, AlertCircle, Loader2 } from "lucide-react";
-import { API_BASE, getToken } from "@/lib/auth";
+import { API_BASE, getToken, getStoredUser } from "@/lib/auth";
+import { io } from "socket.io-client";
 
 const channelIcons: Record<string, ReactElement> = {
   whatsapp:  <MessageCircle size={12} color="#25D366" />,
@@ -33,9 +34,50 @@ export default function InboxPage() {
   const [aiMode, setAiMode] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const selectedConvRef = useRef<any>(null);
+
+  useEffect(() => {
+    selectedConvRef.current = selectedConv;
+  }, [selectedConv]);
 
   useEffect(() => {
     fetchConversations();
+
+    const user = getStoredUser();
+    const token = getToken();
+    if (!user || !token) return;
+
+    const socketUrl = API_BASE.replace('/api', '');
+    const socket = io(socketUrl, {
+      auth: { teamId: user.team_id, userId: user.id, token }
+    });
+
+    socket.on("message:new", (data: any) => {
+      const { message, conversationId } = data;
+      
+      setConversations(prev => {
+        const index = prev.findIndex(c => c.id === conversationId);
+        if (index === -1) {
+          fetchConversations();
+          return prev;
+        }
+        const updated = [...prev];
+        updated[index] = { ...updated[index], last_message_at: message.created_at };
+        const [moved] = updated.splice(index, 1);
+        return [moved, ...updated];
+      });
+
+      if (selectedConvRef.current?.id === conversationId) {
+        setMessages(prev => {
+          if (prev.find(m => m.id === message.id)) return prev;
+          return [...prev, message];
+        });
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const fetchConversations = async () => {
@@ -93,8 +135,13 @@ export default function InboxPage() {
       });
       const data = await res.json();
       if (data.success) {
-        // Replace optimistic message with real message
-        setMessages(prev => prev.map(m => m.id === tempId ? data.data : m));
+        // Replace optimistic message with real message, handling potential socket race condition
+        setMessages(prev => {
+          if (prev.some(m => m.id === data.data.id)) {
+            return prev.filter(m => m.id !== tempId);
+          }
+          return prev.map(m => m.id === tempId ? data.data : m);
+        });
       }
     } catch (err) {
       console.error(err);
